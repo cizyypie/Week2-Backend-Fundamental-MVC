@@ -73,14 +73,14 @@ function startMonitoring(interval = 10000) {
     };
 
     console.log(`
-=== System Monitor ===
-Uptime: ${stats.uptime}
-Memory Usage:
-  Total : ${stats.totalMem}
-  Used  : ${stats.usedMem}
-  Free  : ${stats.freeMem}
-CPU Load (1, 5, 15m): [${stats.loadAvg.join(', ')}]
-    `);
+        === System Monitor ===
+        Uptime: ${stats.uptime}
+        Memory Usage:
+          Total : ${stats.totalMem}
+          Used  : ${stats.usedMem}
+          Free  : ${stats.freeMem}
+        CPU Load (1, 5, 15m): [${stats.loadAvg.join(', ')}]
+            `);
 
     // Auto-shutdown jika memory < 100MB
     if (os.freemem() < 100 * 1024 * 1024) {
@@ -92,7 +92,6 @@ CPU Load (1, 5, 15m): [${stats.loadAvg.join(', ')}]
   }, interval);
 
   setInterval(checkServerHealth, 15000);
-
   return timer;
 }
 
