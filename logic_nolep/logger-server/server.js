@@ -1,34 +1,50 @@
-const http = require("http"); //untuk membuat server
-const fs = require("fs").promises; //operasi file async atau await
-const path = require("path"); //konsturksi path
+import { createServer } from 'http';
+import { promises as fs } from 'fs';
+import { join } from 'path';
+import os from 'os';
 
-const server = http.createServer(async (req, res) => {
-  async function logRequest(req) {
-    const timestamp = new Date().toISOString();
-    const logData = `[${timestamp}] ${req.method} ${req.url} FROM ${req.socket.remoteAddress}\n`;
+function formatBytes(bytes) {
+  return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+}
 
-    const logPath = path.join(__dirname, "requests.log");
+async function logRequest(req) {
+  const timestamp = new Date().toISOString();
+  const logData = `[${timestamp}] ${req.method} ${req.url} FROM ${req.socket.remoteAddress}\n`;
+  const logPath = join(process.cwd(), "requests.log"); 
+  try {
+    await fs.appendFile(logPath, logData);
+  } catch (error) {
+    console.error("Logging error:", error);
+  }
+}
 
-    try {
-      await fs.appendFile(logPath, logData);
-    } catch (error) {
-      console.error("Logging error:", error);
-    }
+const server = createServer(async (req, res) => {
+
+  logRequest(req);
+
+  if (req.url === "/") {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("Home Page");
+    return;
   }
 
-  server.on("request", async (req, res) => {
-    // Jalankan logging tanpa menunggu
-    logRequest(req);
+  if (req.url === "/health") {
+    const total = os.totalmem();
+    const free = os.freemem();
 
-    // Handle response
-    if (req.url === "/") {
-      res.writeHead(200, { "Content-Type": "text/plain" });
-      res.end("Home Page");
-    } else {
-      res.writeHead(404);
-      res.end("Page Not Found");
-    }
-  });
+    const memory = {
+      total: formatBytes(total),
+      used: formatBytes(total - free),
+      free: formatBytes(free)
+    };
+
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(memory));
+    return;
+  }
+
+  res.writeHead(404);
+  res.end("Page Not Found");
 });
 
 server.listen(3000, () => {
