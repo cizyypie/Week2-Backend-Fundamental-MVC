@@ -3,6 +3,7 @@ import axios from "axios";
 import { createServer } from 'http';
 import { promises as fs } from 'fs';
 import { join } from 'path';
+import chalk from 'chalk'
 
 let isMonitoring = false;
 
@@ -47,7 +48,8 @@ const server = createServer(async (req, res) => {
 
 // Start the server
 server.listen(3000, () => {
-  console.log('Server running on http://localhost:3000');
+  console.log(chalk.blue('Server running on'))
+  console.log(chalk.red('http://localhost:3000'));
 });
 
 async function checkServerHealth() {
