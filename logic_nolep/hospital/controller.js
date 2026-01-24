@@ -44,11 +44,104 @@ class HospitalController {
     });
   }
 
-  static addPatient(argument) {}
+  static addPatient(argument) {
+    Employee.findAll((err, employees) => {
+      if (err) return HospitalView.ErrorView(err);
 
-  static updatePatient(argument) {}
+      const loggedInUser = employees.find((usr) => usr.login === true);
+      if (!loggedInUser || loggedInUser.role !== "dokter") {
+        return HospitalView.ErrorView("Access denied or login required");
+      }
 
-  static deletePatient(argument) {}
+      const [id, name, ...diseases] = argument;
+      if (!name?.trim() || !diseases.length) {
+        return HospitalView.ErrorView(
+          "Name and at least one disease must be filled in!",
+        );
+      }
+
+      Patient.findAll((err, patients) => {
+        if (err) return HospitalView.ErrorView(err);
+
+        const newPatient = new Patient(id, name, diseases);
+        patients.push(newPatient);
+
+        Patient.saveAll(patients, (err) => {
+          if (err) {
+            HospitalView.ErrorView(err);
+          } else {
+            HospitalView.addPatientView(newPatient);
+          }
+        });
+      });
+    });
+  }
+
+  static updatePatient(argument) {
+    Employee.findAll((err, employees) => {
+      if (err) return HospitalView.ErrorView(err);
+
+      const employee = employees.find((usr) => usr.login === true);
+      if (!employee || employee.role !== "dokter") {
+        return HospitalView.ErrorView("Access denied or login required");
+      }
+
+      const [id, name, ...diseases] = argument;
+      if (!name?.trim() || !diseases.length) {
+        return HospitalView.ErrorView("Name or disease must be filled in!");
+      }
+
+      Patient.findAll((err, patients) => {
+        if (err) return HospitalView.ErrorView(err);
+
+        const index = patients.findIndex((p) => p.id === id);
+        if (index === -1) {
+          return HospitalView.ErrorView("Invalid patient ID");
+        }
+
+        const updatedPatient = new Patient(id, name, diseases);
+        patients[index] = updatedPatient;
+        Patient.saveAll(patients, (err) => {
+          if (err) {
+            HospitalView.ErrorView(err);
+          } else {
+            HospitalView.updatePatientView(updatedPatient);
+          }
+        });
+      });
+    });
+  }
+
+  static deletePatient(argument) {
+    Employee.findAll((err, employees) => {
+      if (err) return HospitalView.ErrorView(err);
+
+      const employee = employees.find((usr) => usr.login === true);
+      if (!employee || employee.role !== "dokter") {
+        return HospitalView.ErrorView("Access denied or login required");
+      }
+
+      const id = argument[0];
+      if (!id)
+        return HospitalView.ErrorView("Patient ID is required for deletion!");
+
+      Patient.findAll((err, patients) => {
+        if (err) return HospitalView.ErrorView(err);
+
+        const index = patients.findIndex((p) => p.id === id);
+        if (index === -1) {
+          return HospitalView.ErrorView("Invalid patient ID");
+        }
+        patients.splice(index, 1);
+
+        Patient.saveAll(patients, (err) => {
+          if (err) return HospitalView.ErrorView(err);
+
+          HospitalView.deletePatient(id);
+        });
+      });
+    });
+  }
 
   static logout() {
     Employee.findAll((err, employees) => {
@@ -63,20 +156,85 @@ class HospitalController {
         return;
       }
       employee.login = false;
-   
-    Employee.saveAll(employees, (err) => {
-      if (err) {
-        HospitalView.ErrorView(err);
-      } else HospitalView.logoutView(employee);
+
+      Employee.saveAll(employees, (err) => {
+        if (err) {
+          HospitalView.ErrorView(err);
+        } else HospitalView.logoutView(employee);
+      });
     });
-   });
   }
 
-  static show(type) {}
+  static show(type) {
+    Employee.findAll((err, employees) => {
+      if (err) {
+        HospitalView.ErrorView(err);
+        return;
+      }
 
-  static findPatientBy(argument) {}
+      const employee = employees.find((usr) => usr.login === true);
+      if (!employee) {
+        HospitalView.ErrorView("Please login first");
+        return;
+      }
+      if (type === "employee") {
+        if (employee.role !== "admin") {
+          HospitalView.ErrorView("Access denied");
+          return;
+        }
+        HospitalView.showEmployeeView(employees);
+        return;
+      }
+      if (type === "patient") {
+        Patient.findAll((err, patients) => {
+          if (err) {
+            HospitalView.ErrorView(err);
+          } else {
+            HospitalView.showPatientView(patients);
+          }
+        });
+        return;
+      }
 
-  static help() {}
+      HospitalView.ErrorView("Invalid show command");
+    });
+  }
+
+  static findPatientBy(argument) {
+    Employee.findAll((err, employees) => {
+      if (err) return HospitalView.ErrorView(err);
+
+      const employee = employees.find((usr) => usr.login === true);
+      if (!employee || employee.role !== "dokter") {
+        return HospitalView.ErrorView("Access denied or login required");
+      }
+
+      const searchTerm = argument[0];
+      if (!searchTerm)
+        return HospitalView.ErrorView("Please provide a name or ID to search!");
+
+      Patient.findAll((err, patients) => {
+        if (err) return HospitalView.ErrorView(err);
+
+        const results = patients.filter(
+          (p) =>
+            p.id === searchTerm ||
+            p.name.toLowerCase().includes(searchTerm.toLowerCase()),
+        );
+
+        if (results.length === 0) {
+          return HospitalView.ErrorView(
+            `No patients found matching: ${searchTerm}`,
+          );
+        }
+        HospitalView.showPatientView(results);
+      });
+    });
+  }
+
+  static help() {
+    HospitalView.helpView();
+  }
 }
 
 module.exports = HospitalController;

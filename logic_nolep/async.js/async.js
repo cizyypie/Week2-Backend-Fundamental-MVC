@@ -6,7 +6,7 @@ const users = [
   { id: 3, username: "alice" },
 ];
 
-// Implementasi Callback
+// Implementasi 
 function getUserDataCallback(userId, callback) {
   const targetId = users.find((user) => user.id === userId);
   callback(targetId);
