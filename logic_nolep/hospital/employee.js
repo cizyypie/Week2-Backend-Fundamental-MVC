@@ -2,50 +2,40 @@ let fs = require("fs");
 
 class Employee {
   constructor(username, password, position) {
-    this.username = username
-    this.password = password
-    this.position = position
+    this.username = username;
+    this.password = password;
+    this.position = position;
     this.login = false;
+  }
+
+  static findAll(cb) {
+    fs.readFile("./employee.json", "utf8", (err, data) => {
+      if (err) return cb(err);
+      cb(err, JSON.parse(data));
+    });
+  }
+
+  static saveAll(newData, cb) {
+    fs.writeFile("./employee.json", JSON.stringify(newData), (err) => {
+      if (err) return cb(err);
+      cb(null);
+    });
   }
 
   static register(name, password, role, cb) {
     this.findAll((err, data) => {
-      if (err) {
-        console.log(err);
-      } else {
-        let obj = new Employee(name, password, role)
-        let newData = data;
-        newData.push(obj);
-        let objArr = [];
-        objArr.push(obj);
-        objArr.push(newData.length);
+      if (err) return cb(err);
 
-        fs.writeFile("./employee.json", JSON.stringify(newData), (err) => {
-          if (err) {
-            console.log(err);
-          } else {
-            cb(err, objArr);
-          }
-        })
-      }
+      const newEmply = new Employee(name, password, role);
+      data.push(newEmply);
+
+      this.saveAll(data, (err) => {
+        if (err) return cb(err);
+
+        cb(null, [newEmply, data.length]);
+      });
     });
   }
-
-  // lanjutkan method lain
-
-  static findAll(cb) {
-    fs.readFile("./employee.json", "utf8", (err, data) => {
-      if (err) {
-        cb(err)
-      } else {
-        cb(err, JSON.parse(data));
-      }
-    })
-  }
- 
-
 }
-
-
 
 module.exports = Employee;

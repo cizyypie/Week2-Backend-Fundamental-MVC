@@ -3,8 +3,8 @@ let Employee = require("./employee");
 let HospitalView = require("./view");
 
 class HospitalController {
-  static register(name, password, role) {
-    Employee.register(name, password, role, (err, objArr) => {
+  static register(name, password, position) {
+    Employee.register(name, password, position, (err, objArr) => {
       if (err) {
         HospitalView.ErrorView(err);
       } else {
@@ -49,7 +49,7 @@ class HospitalController {
       if (err) return HospitalView.ErrorView(err);
 
       const loggedInUser = employees.find((usr) => usr.login === true);
-      if (!loggedInUser || loggedInUser.role !== "dokter") {
+      if (!loggedInUser || loggedInUser.position !== "dokter") {
         return HospitalView.ErrorView("Access denied or login required");
       }
 
@@ -70,7 +70,7 @@ class HospitalController {
           if (err) {
             HospitalView.ErrorView(err);
           } else {
-            HospitalView.addPatientView(newPatient);
+            HospitalView.addPatient(newPatient);
           }
         });
       });
@@ -82,7 +82,7 @@ class HospitalController {
       if (err) return HospitalView.ErrorView(err);
 
       const employee = employees.find((usr) => usr.login === true);
-      if (!employee || employee.role !== "dokter") {
+      if (!employee || employee.position !== "dokter") {
         return HospitalView.ErrorView("Access denied or login required");
       }
 
@@ -117,7 +117,7 @@ class HospitalController {
       if (err) return HospitalView.ErrorView(err);
 
       const employee = employees.find((usr) => usr.login === true);
-      if (!employee || employee.role !== "dokter") {
+      if (!employee || employee.position !== "dokter") {
         return HospitalView.ErrorView("Access denied or login required");
       }
 
@@ -178,7 +178,7 @@ class HospitalController {
         return;
       }
       if (type === "employee") {
-        if (employee.role !== "admin") {
+        if (employee.position !== "admin") {
           HospitalView.ErrorView("Access denied");
           return;
         }
@@ -205,7 +205,7 @@ class HospitalController {
       if (err) return HospitalView.ErrorView(err);
 
       const employee = employees.find((usr) => usr.login === true);
-      if (!employee || employee.role !== "dokter") {
+      if (!employee || employee.position !== "dokter") {
         return HospitalView.ErrorView("Access denied or login required");
       }
 
