@@ -1,0 +1,32 @@
+[
+  {
+    "username": "adminn",
+    "userPass": "admin2",
+    "status": "offline",
+    "lastLogin": "2026-01-24T15:29:06.423Z"
+  },
+  {
+    "username": "user1",
+    "userPass": "user1",
+    "status": "offline",
+    "lastLogin": null
+  },
+  {
+    "username": "user2",
+    "userPass": "username",
+    "status": "online",
+    "lastLogin": "2026-01-25T13:43:32.258Z"
+  },
+  {
+    "username": "userr",
+    "userPass": "user",
+    "status": "offline",
+    "lastLogin": null
+  },
+  {
+    "username": "user",
+    "userPass": "userr",
+    "status": "offline",
+    "lastLogin": null
+  }
+]

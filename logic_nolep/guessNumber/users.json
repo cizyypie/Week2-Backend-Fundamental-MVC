@@ -1,0 +1,37 @@
+[
+  {
+    "username": "femi",
+    "userPass": "user",
+    "status": "offline",
+    "lastLogin": "2026-01-29T08:38:44.059Z",
+    "score": 6
+  },
+  {
+    "username": "yay",
+    "userPass": "user",
+    "status": "offline",
+    "lastLogin": "2026-01-29T08:44:37.657Z",
+    "score": 10
+  },
+  {
+    "username": "tess",
+    "userPass": "user",
+    "status": "offline",
+    "lastLogin": null,
+    "score": 2
+  },
+  {
+    "username": "yey",
+    "userPass": "user",
+    "status": "offline",
+    "lastLogin": "2026-01-29T08:53:44.976Z",
+    "score": 0
+  },
+  {
+    "username": "heh",
+    "userPass": "user",
+    "status": "online",
+    "lastLogin": "2026-01-29T08:59:26.913Z",
+    "score": 5
+  }
+]
